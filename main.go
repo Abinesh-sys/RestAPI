@@ -4,19 +4,37 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"encoding/json"
 )
 
 type Article struct {
-	Title
+	Title string `json:"Title"`
+	Desc string `json:"desc"`
+	Content string `json:"content"`
 }
+
+type Articles []Article
+
+func allArticles(w http.ResponseWriter, r *http.Request) {
+	articles := Articles{
+	Article{Title:"Test Title", Desc: "Test Description", Content: "Hello World"},
+	}
+
+	fmt.Println("Endpoint Hit: All Article Endpoint")
+	json.NewEncoder(w).Encode(articles) 
+
+}
+
 
 func homePage(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "HomePage Endpoint Hit") 
 }
 
+
 func handleRequests() {
 	http.HandleFunc("/", homePage)
-	log.Fatal(http.ListenAndServe(":8081", nil))
+	http.HandleFunc("/articles", allArticles)
+	log.Fatal(http.ListenAndServe(":8082", nil))
 }
 
 func main() {
